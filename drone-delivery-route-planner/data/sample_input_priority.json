@@ -1,0 +1,11 @@
+{
+  "drone": { "name": "Medical-Drone", "speed_kmh": 40 },
+  "start": { "name": "Hub", "x": 0, "y": 0 },
+  "deliveries": [
+    { "name": "Hospital", "x": 8, "y": 6, "priority": 1 },
+    { "name": "Clinic",   "x": 3, "y": 7, "priority": 1 },
+    { "name": "Pharmacy", "x": 1, "y": 2, "priority": 2 },
+    { "name": "Cafe",     "x": 5, "y": 1, "priority": 3 },
+    { "name": "Office",   "x": 9, "y": 2, "priority": 3 }
+  ]
+}

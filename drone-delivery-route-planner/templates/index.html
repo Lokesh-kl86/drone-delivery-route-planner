@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="stats">
+  <div class="stat stat-blue"><span class="stat-icon">&#128230;</span><div><small>Total Orders</small><strong>&ndash;</strong></div></div>
+  <div class="stat stat-green"><span class="stat-icon">&#128641;</span><div><small>Drones Used</small><strong>&ndash;</strong></div></div>
+  <div class="stat stat-purple"><span class="stat-icon">&#128205;</span><div><small>Total Distance</small><strong>&ndash;</strong></div></div>
+</section>
+
+<section class="card welcome">
+  <h2>Welcome</h2>
+  <p>Plan delivery routes for a fleet of drones in three steps:</p>
+  <ol class="steps">
+    <li><strong>Choose</strong> how many orders and drones you have (and where the depot is).</li>
+    <li><strong>Click Plan Routes</strong> &mdash; random delivery orders are created around the depot.</li>
+    <li><strong>Review</strong> which drone delivers what, the route map, distances and times.</li>
+  </ol>
+  <p class="muted">
+    How it works: orders are split between drones by angle around the depot, then each drone's
+    shortest round trip is found with Dynamic Programming (exact for up to 12 orders per drone)
+    or a Nearest&nbsp;Neighbour&nbsp;+&nbsp;2-opt heuristic for larger groups. An optional battery
+    range makes the planner skip orders a drone cannot reach and warn you about them.
+  </p>
+</section>
+{% endblock %}

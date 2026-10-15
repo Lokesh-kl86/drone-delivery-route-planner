@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Drone Delivery Route Planner{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-icon">&#128641;</span> Drone Delivery Route Planner</div>
+    <nav class="tagline">Smart Routes &nbsp;|&nbsp; Efficient Deliveries &nbsp;|&nbsp; Greener Future</nav>
+  </header>
+
+  <div class="layout">
+    <aside class="card settings">
+      <h2>Delivery Settings</h2>
+      {% include "_form.html" %}
+    </aside>
+
+    <main class="content">
+      {% if errors %}
+      <div class="alert alert-error" role="alert">
+        <strong>Please fix the following:</strong>
+        <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <footer class="footer">
+    Routes are computed by the project's Dynamic Programming and Nearest&nbsp;Neighbour&nbsp;+&nbsp;2-opt solvers.
+  </footer>
+  <script>
+    // Disable the button after clicking so the plan is not submitted twice.
+    document.getElementById("plan-form").addEventListener("submit", function () {
+      var b = document.getElementById("plan-btn");
+      b.disabled = true; b.textContent = "Planning...";
+    });
+  </script>
+</body>
+</html>

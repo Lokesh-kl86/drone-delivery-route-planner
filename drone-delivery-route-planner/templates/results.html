@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Results - Drone Delivery Route Planner{% endblock %}
+{% block content %}
+
+<section class="stats">
+  <div class="stat stat-blue"><span class="stat-icon">&#128230;</span>
+    <div><small>Total Orders</small><strong>{{ total_orders }}</strong>
+      {% if unassigned %}<em>{{ assigned_orders }} assigned</em>{% endif %}</div></div>
+  <div class="stat stat-green"><span class="stat-icon">&#128641;</span>
+    <div><small>Drones Used</small><strong>{{ drones_used }}</strong>
+      {% if drones_used != drones_requested %}<em>of {{ drones_requested }}</em>{% endif %}</div></div>
+  <div class="stat stat-purple"><span class="stat-icon">&#128205;</span>
+    <div><small>Total Distance</small><strong>{{ "%.1f"|format(total_distance) }} km</strong>
+      <em>last drone back in {{ "%.0f"|format(longest_minutes) }} min</em></div></div>
+</section>
+
+{% if warnings or unassigned %}
+<section class="alert alert-warn" role="alert">
+  <strong>&#9888; Warnings</strong>
+  <ul>
+    {% for w in warnings %}<li>{{ w }}</li>{% endfor %}
+  </ul>
+  {% if unassigned %}<p class="unassigned">Unassigned orders: <strong>{{ unassigned|join(", ") }}</strong></p>{% endif %}
+</section>
+{% endif %}
+
+<section class="card">
+  <h3>Delivery Routes Map</h3>
+  <div class="map-wrap">{{ svg|safe }}</div>
+  <ul class="legend">
+    <li><span class="dot" style="background: {{ depot_color }}"></span> Depot</li>
+    {% for r in rows if r.used %}
+    <li><span class="dot" style="background: {{ r.color }}"></span> Drone {{ r.id }}</li>
+    {% endfor %}
+    {% if unassigned %}<li><span class="dot dot-hollow"></span> Unassigned</li>{% endif %}
+    <li class="muted">Numbers = order IDs; arrows show flying direction. Map is drawn to scale (km).</li>
+  </ul>
+</section>
+
+<section class="two-col">
+  <div class="card">
+    <h3>Drone Assignments</h3>
+    <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Drone ID</th><th>Orders Assigned</th>
+          <th>Route Distance (km)</th><th>Estimated Time (min)</th>
+          {% if max_range %}<th>Battery Used</th>{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+      {% for r in rows %}
+        <tr class="{{ '' if r.used else 'row-idle' }}">
+          <td><span class="badge" style="background: {{ r.color }}">Drone {{ r.id }}</span></td>
+          <td>{{ r.orders_sorted }}<div class="route-cell">{{ r.route }}</div></td>
+          <td>{{ "%.1f"|format(r.distance) if r.used else "-" }}</td>
+          <td>{{ "%.0f"|format(r.minutes) if r.used else "-" }}</td>
+          {% if max_range %}
+          <td>{% if r.battery_pct is not none %}
+                <span class="pill {{ 'pill-warn' if r.battery_pct > 90 else 'pill-ok' }}">{{ "%.0f"|format(r.battery_pct) }}%</span>
+              {% else %}-{% endif %}</td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    <p class="muted small">Estimated time = distance &divide; {{ "%g"|format(speed) }} km/h.
+      Algorithm per drone:
+      {% for a in rows if a.used %}Drone {{ a.id }} &ndash; {{ a.algorithm }}{{ "; " if not loop.last }}{% endfor %}.</p>
+  </div>
+
+  <div class="card">
+    <h3>Route Distance Summary</h3>
+    <div class="bars">
+      {% for r in rows %}
+      <div class="bar-col">
+        <span class="bar-value">{{ "%.1f"|format(r.distance) }} km</span>
+        <div class="bar" style="height: {{ r.bar_pct if r.used else 0 }}%; background: {{ r.color }}"></div>
+        <span class="bar-label">Drone {{ r.id }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <details>
+    <summary><strong>Order locations</strong> ({{ order_rows|length }} generated orders)</summary>
+    <div class="table-scroll">
+    <table class="compact">
+      <thead><tr><th>Order</th><th>Latitude</th><th>Longitude</th><th>Delivered by</th></tr></thead>
+      <tbody>
+      {% for o in order_rows %}
+        <tr>
+          <td>{{ o.id }}</td><td>{{ "%.5f"|format(o.lat) }}</td><td>{{ "%.5f"|format(o.lon) }}</td>
+          <td>{% if o.drone %}<span class="badge" style="background: {{ o.color }}">Drone {{ o.drone }}</span>
+              {% else %}<span class="muted">unassigned</span>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </details>
+  <p class="muted small">Orders are randomly generated within {{ "%g"|format(radius) }} km of the depot
+    ({{ "%.4f"|format(depot_lat) }}, {{ "%.4f"|format(depot_lon) }}).
+    Random seed: <strong>{{ seed }}</strong> &mdash; enter it under <em>Advanced options</em> to get exactly the same orders again.</p>
+</section>
+{% endblock %}

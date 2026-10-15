@@ -1,0 +1,10 @@
+{
+  "drone": { "name": "Drone-1", "speed_kmh": 30 },
+  "start": { "name": "A", "x": 0, "y": 0 },
+  "deliveries": [
+    { "name": "B", "x": 2, "y": 3 },
+    { "name": "C", "x": 5, "y": 2 },
+    { "name": "D", "x": 6, "y": 6 },
+    { "name": "E", "x": 1, "y": 5 }
+  ]
+}

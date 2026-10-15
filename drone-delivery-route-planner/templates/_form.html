@@ -1,0 +1,33 @@
+<form id="plan-form" method="post" action="{{ url_for('plan') }}" novalidate>
+  <label for="orders">Number of Orders</label>
+  <input type="number" id="orders" name="orders" min="1" max="{{ max_orders }}" step="1"
+         value="{{ form.get('orders', '10') }}" required>
+
+  <label for="drones">Number of Drones</label>
+  <input type="number" id="drones" name="drones" min="1" max="{{ max_drones }}" step="1"
+         value="{{ form.get('drones', '3') }}" required>
+
+  <label for="depot">Depot Location (lat, long)</label>
+  <input type="text" id="depot" name="depot" value="{{ form.get('depot', '17.3850, 78.4867') }}" required>
+  <small>Default: Hyderabad</small>
+
+  <details class="advanced" {% if form.get('battery') or form.get('seed') %}open{% endif %}>
+    <summary>Advanced options</summary>
+
+    <label for="battery">Battery range per drone (km)</label>
+    <input type="number" id="battery" name="battery" min="0.1" step="any"
+           placeholder="empty = unlimited" value="{{ form.get('battery', '') }}">
+
+    <label for="speed">Drone speed (km/h)</label>
+    <input type="number" id="speed" name="speed" min="1" step="any" value="{{ form.get('speed', '30') }}">
+
+    <label for="radius">Delivery radius around depot (km)</label>
+    <input type="number" id="radius" name="radius" min="0.5" step="any" value="{{ form.get('radius', '8') }}">
+
+    <label for="seed">Random seed (optional)</label>
+    <input type="number" id="seed" name="seed" step="1" placeholder="same seed = same orders"
+           value="{{ form.get('seed', '') }}">
+  </details>
+
+  <button type="submit" id="plan-btn" class="btn-primary">&#10148; Plan Routes</button>
+</form>
